@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # 🧠 JAAXSENSUS — Mobile
 
@@ -117,10 +117,4 @@ Este projeto faz parte de um trabalho acadêmico/institucional. Contribuições 
 
 Distribuído sob a licença MIT.
 
----
 
-<div align="center">
-
-Feito com ❤️ para o projeto **SENUS** · Branch `MOBILE`
-
-</div>
