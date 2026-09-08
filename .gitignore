@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# AI Agent files (implementation plans, internal notes)
+.agent/
+.gemini/
+
+# VS Code
+.vscode/
