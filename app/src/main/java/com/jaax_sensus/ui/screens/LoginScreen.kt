@@ -117,7 +117,7 @@ fun LoginScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.logo_techtea),
-                        contentDescription = "Logo TechTEA",
+                        contentDescription = "Logo SENUS",
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(CircleShape),
@@ -136,7 +136,7 @@ fun LoginScreen(
                 )
 
                 Text(
-                    text = "TechTEA",
+                    text = "SENUS",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color(0xFF94A3B8), // slate-400
                     fontSize = 14.sp

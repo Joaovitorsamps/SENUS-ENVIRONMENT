@@ -37,7 +37,7 @@ import com.jaax_sensus.ui.theme.PrimaryBlue
 import com.jaax_sensus.ui.theme.White
 
 @Composable
-fun TechTEAHeader(
+fun SENUSHeader(
     userName: String = "jose",
     onLogoutClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -64,7 +64,7 @@ fun TechTEAHeader(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_techtea),
-                    contentDescription = "TechTEA Logo",
+                    contentDescription = "SENUS Logo",
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape),
@@ -72,7 +72,7 @@ fun TechTEAHeader(
                 )
             }
             Text(
-                text = "TechTEA",
+                text = "SENUS",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = White,

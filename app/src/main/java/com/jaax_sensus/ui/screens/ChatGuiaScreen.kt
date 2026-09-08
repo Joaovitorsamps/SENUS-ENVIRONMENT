@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jaax_sensus.ui.components.TechTEAHeader
+import com.jaax_sensus.ui.components.SENUSHeader
 import com.jaax_sensus.ui.theme.DeepNavyBlue
 import com.jaax_sensus.ui.theme.GreyishDarkBlue
 import com.jaax_sensus.ui.theme.LightGrey
@@ -46,7 +46,7 @@ fun ChatGuiaScreen(
             .fillMaxSize()
             .background(DeepNavyBlue)
     ) {
-        TechTEAHeader(
+        SENUSHeader(
             userName = userName,
             onLogoutClick = onLogoutClick
         )

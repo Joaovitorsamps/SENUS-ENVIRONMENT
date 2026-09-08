@@ -45,7 +45,7 @@ app/src/main/java/com/jaax_sensus/
 │   └── NavKeys.kt             # Rotas de navegação (AppRoute)
 ├── ui/
 │   ├── components/
-│   │   └── TechTEAHeader.kt   # Componente de cabeçalho reutilizável
+│   │   └── SENUSHeader.kt     # Componente de cabeçalho reutilizável
 │   ├── screens/
 │   │   ├── LoginScreen.kt
 │   │   ├── EmocoesScreen.kt
