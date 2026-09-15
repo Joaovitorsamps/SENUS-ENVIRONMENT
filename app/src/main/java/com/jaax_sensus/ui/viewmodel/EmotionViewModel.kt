@@ -1,18 +1,23 @@
 package com.jaax_sensus.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.jaax_sensus.data.DateFilter
 import com.jaax_sensus.data.DiaryEntry
 import com.jaax_sensus.data.EmotionType
+import com.jaax_sensus.data.remote.SupabaseConfig
+import com.jaax_sensus.data.repository.AuthRepository
+import com.jaax_sensus.data.repository.DiaryRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.text.SimpleDateFormat
+import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
-class EmotionViewModel : ViewModel() {
+class EmotionViewModel(
+    private val authRepository: AuthRepository = AuthRepository(),
+    private val diaryRepository: DiaryRepository = DiaryRepository()
+) : ViewModel() {
 
     private val _entries = MutableStateFlow<List<DiaryEntry>>(emptyList())
     val entries: StateFlow<List<DiaryEntry>> = _entries.asStateFlow()
@@ -35,14 +40,39 @@ class EmotionViewModel : ViewModel() {
     private val _userName = MutableStateFlow("jose")
     val userName: StateFlow<String> = _userName.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
+
+    val isBackendConnected: Boolean
+        get() = SupabaseConfig.isConfigured
+
     fun login(username: String, password: String): Boolean {
         if (username.isBlank()) return false
-        _userName.value = username.trim()
+        val trimmed = username.trim()
+        _userName.value = trimmed
         _isLoggedIn.value = true
+
+        // Sincroniza em segundo plano com o Supabase se configurado
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = authRepository.login(trimmed, password)
+            _isLoading.value = false
+            result.onSuccess { remoteUsername ->
+                _userName.value = remoteUsername
+                refreshEntries()
+            }.onFailure { error ->
+                _errorMessage.value = error.message
+            }
+        }
+
         return true
     }
 
     fun logout() {
+        authRepository.logout()
         _isLoggedIn.value = false
     }
 
@@ -51,17 +81,55 @@ class EmotionViewModel : ViewModel() {
     }
 
     fun addEntry(emotion: EmotionType, note: String) {
+        val trimmedNote = note.trim()
         val newEntry = DiaryEntry(
             emotion = emotion,
-            note = note.trim(),
+            note = trimmedNote,
             timestamp = System.currentTimeMillis()
         )
+        // Atualização otimista imediata na UI
         _entries.value = listOf(newEntry) + _entries.value
         _selectedEmotion.value = null
+
+        // Sincroniza com o Supabase
+        viewModelScope.launch {
+            val result = diaryRepository.addEntry(emotion, trimmedNote)
+            result.onSuccess { inserted ->
+                // Atualiza com o ID ou data oficial retornada pelo Supabase
+                _entries.value = _entries.value.map {
+                    if (it.id == newEntry.id) inserted else it
+                }
+            }.onFailure { error ->
+                _errorMessage.value = error.message
+            }
+        }
     }
 
     fun deleteEntry(id: String) {
         _entries.value = _entries.value.filterNot { it.id == id }
+
+        viewModelScope.launch {
+            diaryRepository.deleteEntry(id)
+        }
+    }
+
+    fun refreshEntries() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = diaryRepository.getEntries()
+            _isLoading.value = false
+            result.onSuccess { remoteEntries ->
+                if (remoteEntries.isNotEmpty()) {
+                    _entries.value = remoteEntries
+                }
+            }.onFailure { error ->
+                _errorMessage.value = error.message
+            }
+        }
+    }
+
+    fun clearError() {
+        _errorMessage.value = null
     }
 
     fun setFilter(filter: DateFilter) {
@@ -123,4 +191,3 @@ class EmotionViewModel : ViewModel() {
         return filtered.groupingBy { it.emotion }.eachCount()
     }
 }
-

@@ -96,8 +96,24 @@ git checkout MOBILE
 # 2. Abra no Android Studio
 # File > Open > selecione a pasta clonada
 
-# 3. Sincronize o Gradle e execute no emulador ou dispositivo físico
+# 3. (Opcional) Configure o Supabase em local.properties:
+# supabase.url=https://seu-projeto.supabase.co
+# supabase.anon.key=sua-chave-anon-publica
+
+# 4. Sincronize o Gradle e execute no emulador ou dispositivo físico
 ```
+
+### ⚙️ Configuração do Backend (Supabase)
+
+Para conectar o app ao banco de dados Supabase da equipe, adicione as seguintes linhas no seu arquivo `local.properties` na raiz do projeto:
+
+```properties
+supabase.url=https://seu-projeto.supabase.co
+supabase.anon.key=sua-chave-anonima-publica
+```
+
+> 💡 **Nota:** Se as chaves não forem configuradas no `local.properties`, o app inicia automaticamente em **modo offline/demo**, preservando toda a navegação e operações em memória.
+
 
 ---
 

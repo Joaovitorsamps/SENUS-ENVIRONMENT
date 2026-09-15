@@ -104,5 +104,34 @@ class EmotionViewModelTest {
         viewModel.setFilter(DateFilter.TRINTA_DIAS)
         assertEquals(DateFilter.TRINTA_DIAS, viewModel.currentFilter.value)
     }
+
+    @Test
+    fun diaryEntryDto_convertsToAndFromDomainCorrectly() {
+        val domain = com.jaax_sensus.data.DiaryEntry(
+            id = "test-uuid",
+            emotion = EmotionType.ANSIOSO,
+            note = "Nota de teste",
+            timestamp = 1700000000000L
+        )
+
+        val dto = com.jaax_sensus.data.remote.dto.DiaryEntryDto.fromDomain(domain, userId = "user-123")
+        assertEquals("test-uuid", dto.id)
+        assertEquals("user-123", dto.userId)
+        assertEquals(EmotionType.ANSIOSO.id, dto.emotionId)
+        assertEquals(EmotionType.ANSIOSO.title, dto.emotionName)
+        assertEquals("Nota de teste", dto.note)
+        assertNotNull(dto.createdAt)
+
+        val convertedBack = dto.toDomain()
+        assertEquals("test-uuid", convertedBack.id)
+        assertEquals(EmotionType.ANSIOSO, convertedBack.emotion)
+        assertEquals("Nota de teste", convertedBack.note)
+    }
+
+    @Test
+    fun supabaseConfig_providesValidUrls() {
+        assertTrue(com.jaax_sensus.data.remote.SupabaseConfig.getBaseRestUrl().endsWith("/rest/v1/"))
+        assertTrue(com.jaax_sensus.data.remote.SupabaseConfig.getBaseAuthUrl().endsWith("/auth/v1/"))
+    }
 }
 
