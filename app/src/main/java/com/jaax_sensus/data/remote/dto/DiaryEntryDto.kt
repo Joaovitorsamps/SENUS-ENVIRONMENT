@@ -11,24 +11,22 @@ import java.util.TimeZone
 
 @JsonClass(generateAdapter = true)
 data class DiaryEntryDto(
-    val id: String? = null,
-    @param:Json(name = "user_id") val userId: String? = null,
-    @param:Json(name = "emotion_id") val emotionId: String,
-    @param:Json(name = "emotion_name") val emotionName: String,
-    val note: String = "",
-    @param:Json(name = "created_at") val createdAt: String? = null
+    @param:Json(name = "ID_Map") val id: String? = null,
+    @param:Json(name = "User_ID") val userId: String? = null,
+    @param:Json(name = "Selection_Type") val selectionType: String,
+    @param:Json(name = "Date_Time_Selection") val dateTimeSelection: String? = null
 ) {
     fun toDomain(): DiaryEntry {
-        val emotion = EmotionType.fromId(emotionId)
-            ?: EmotionType.fromTitle(emotionName)
+        val emotion = EmotionType.fromTitle(selectionType)
+            ?: EmotionType.fromId(selectionType)
             ?: EmotionType.FELIZ
 
-        val parsedTimestamp = parseIsoTimestamp(createdAt)
+        val parsedTimestamp = parseIsoTimestamp(dateTimeSelection)
 
         return DiaryEntry(
             id = id ?: java.util.UUID.randomUUID().toString(),
             emotion = emotion,
-            note = note,
+            note = "",
             timestamp = parsedTimestamp
         )
     }
@@ -36,13 +34,21 @@ data class DiaryEntryDto(
     companion object {
         fun fromDomain(entry: DiaryEntry, userId: String?): DiaryEntryDto {
             return DiaryEntryDto(
-                id = entry.id,
-                userId = userId,
-                emotionId = entry.emotion.id,
-                emotionName = entry.emotion.title,
-                note = entry.note,
-                createdAt = formatIsoTimestamp(entry.timestamp)
+                id = if (isValidUuid(entry.id)) entry.id else java.util.UUID.randomUUID().toString(),
+                userId = if (isValidUuid(userId)) userId else null,
+                selectionType = entry.emotion.title,
+                dateTimeSelection = formatIsoTimestamp(entry.timestamp)
             )
+        }
+
+        private fun isValidUuid(str: String?): Boolean {
+            if (str.isNullOrBlank()) return false
+            return try {
+                java.util.UUID.fromString(str)
+                true
+            } catch (_: Exception) {
+                false
+            }
         }
 
         private fun parseIsoTimestamp(isoString: String?): Long {

@@ -19,11 +19,11 @@ class DiaryRepository {
 
         return@withContext try {
             val userId = SupabaseConfig.currentUserId
-            val userFilter = if (!userId.isNullOrBlank() && userId != "demo-user-id") "eq.$userId" else null
+            val userFilter = if (!userId.isNullOrBlank() && isValidUuid(userId)) "eq.$userId" else null
 
             val dtoList = SupabaseClient.diaryApi.getEntries(
                 select = "*",
-                order = "created_at.desc",
+                order = "Date_Time_Selection.desc",
                 userFilter = userFilter
             )
 
@@ -63,7 +63,7 @@ class DiaryRepository {
             val inserted = responseList.firstOrNull()?.toDomain() ?: newEntry
             Result.success(inserted)
         } catch (e: Exception) {
-            // Se falhou ao enviar pro Supabase, ainda mantemos localmente e reportamos sucesso com fallback
+            // Se falhou ao enviar pro Supabase (ex: RLS bloqueado), ainda mantemos localmente e reportamos sucesso com fallback
             Result.success(newEntry)
         }
     }
@@ -84,6 +84,16 @@ class DiaryRepository {
             }
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private fun isValidUuid(str: String?): Boolean {
+        if (str.isNullOrBlank()) return false
+        return try {
+            java.util.UUID.fromString(str)
+            true
+        } catch (_: Exception) {
+            false
         }
     }
 }

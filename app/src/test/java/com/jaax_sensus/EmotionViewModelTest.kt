@@ -108,24 +108,21 @@ class EmotionViewModelTest {
     @Test
     fun diaryEntryDto_convertsToAndFromDomainCorrectly() {
         val domain = com.jaax_sensus.data.DiaryEntry(
-            id = "test-uuid",
+            id = "f47ac10b-58cc-4372-a567-0e02b2c3d479",
             emotion = EmotionType.ANSIOSO,
-            note = "Nota de teste",
+            note = "",
             timestamp = 1700000000000L
         )
 
-        val dto = com.jaax_sensus.data.remote.dto.DiaryEntryDto.fromDomain(domain, userId = "user-123")
-        assertEquals("test-uuid", dto.id)
-        assertEquals("user-123", dto.userId)
-        assertEquals(EmotionType.ANSIOSO.id, dto.emotionId)
-        assertEquals(EmotionType.ANSIOSO.title, dto.emotionName)
-        assertEquals("Nota de teste", dto.note)
-        assertNotNull(dto.createdAt)
+        val dto = com.jaax_sensus.data.remote.dto.DiaryEntryDto.fromDomain(domain, userId = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
+        assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", dto.id)
+        assertEquals("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11", dto.userId)
+        assertEquals(EmotionType.ANSIOSO.title, dto.selectionType)
+        assertNotNull(dto.dateTimeSelection)
 
         val convertedBack = dto.toDomain()
-        assertEquals("test-uuid", convertedBack.id)
+        assertEquals("f47ac10b-58cc-4372-a567-0e02b2c3d479", convertedBack.id)
         assertEquals(EmotionType.ANSIOSO, convertedBack.emotion)
-        assertEquals("Nota de teste", convertedBack.note)
     }
 
     @Test
