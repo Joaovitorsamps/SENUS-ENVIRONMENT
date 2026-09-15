@@ -15,7 +15,7 @@
 
 ## 📖 Sobre o Projeto
 
-O **JAAXSENSUS** é o módulo mobile do ecossistema **SENUS** — uma plataforma voltada ao suporte emocional e ao autoconhecimento de pessoas com TEA. O app permite que o usuário registre como se sente ao longo do dia, acompanhe seu histórico emocional e acesse um guia de apoio conversacional.
+O **JAAXSENSUS** é o módulo mobile do ecossistema **SENSUS** — uma plataforma voltada ao suporte emocional e ao autoconhecimento de pessoas com TEA. O app permite que o usuário registre como se sente ao longo do dia, acompanhe seu histórico emocional e acesse um guia de apoio conversacional.
 
 > Este repositório faz parte do projeto maior [SENUS-ENVIRONMENT](https://github.com/Joaovitorsamps/SENUS-ENVIRONMENT), abrigado na branch `MOBILE`.
 
@@ -45,7 +45,7 @@ app/src/main/java/com/jaax_sensus/
 │   └── NavKeys.kt             # Rotas de navegação (AppRoute)
 ├── ui/
 │   ├── components/
-│   │   └── SENUSHeader.kt     # Componente de cabeçalho reutilizável
+│   │   └── SENSUSHeader.kt    # Componente de cabeçalho reutilizável
 │   ├── screens/
 │   │   ├── LoginScreen.kt
 │   │   ├── EmocoesScreen.kt

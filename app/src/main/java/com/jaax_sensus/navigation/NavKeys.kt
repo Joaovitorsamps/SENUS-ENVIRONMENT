@@ -4,7 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 /**
- * Navigation routes for SENUS app using Jetpack Navigation 3.
+ * Navigation routes for SENSUS app using Jetpack Navigation 3.
  */
 @Serializable
 sealed interface AppRoute : NavKey {

@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jaax_sensus.data.DiaryEntry
 import com.jaax_sensus.data.EmotionType
-import com.jaax_sensus.ui.components.SENUSHeader
+import com.jaax_sensus.ui.components.SENSUSHeader
 import com.jaax_sensus.ui.theme.DeepNavyBlue
 import com.jaax_sensus.ui.theme.GreyishDarkBlue
 import com.jaax_sensus.ui.theme.LightGrey
@@ -73,7 +73,7 @@ fun DiarioScreen(
             .fillMaxSize()
             .background(DeepNavyBlue)
     ) {
-        SENUSHeader(
+        SENSUSHeader(
             userName = userName,
             onLogoutClick = onLogoutClick
         )
