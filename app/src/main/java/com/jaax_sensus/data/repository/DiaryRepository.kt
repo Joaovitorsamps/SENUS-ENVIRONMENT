@@ -10,29 +10,32 @@ import kotlinx.coroutines.withContext
 
 class DiaryRepository {
 
-    private val localFallbackEntries = mutableListOf<DiaryEntry>()
+    private val localFallbackEntriesByUser = mutableMapOf<String, MutableList<DiaryEntry>>()
 
     suspend fun getEntries(): Result<List<DiaryEntry>> = withContext(Dispatchers.IO) {
         if (!SupabaseConfig.isConfigured) {
-            return@withContext Result.success(localFallbackEntries.toList())
+            return@withContext Result.success(fallbackEntriesForCurrentUser().toList())
         }
 
         return@withContext try {
             val userId = SupabaseConfig.currentUserId
-            val userFilter = if (!userId.isNullOrBlank() && isValidUuid(userId)) "eq.$userId" else null
+            if (!isValidUuid(userId)) {
+                return@withContext Result.failure(Exception("Usuário não autenticado."))
+            }
 
             val dtoList = SupabaseClient.diaryApi.getEntries(
                 select = "*",
                 order = "Date_Time_Selection.desc",
-                userFilter = userFilter
+                userFilter = "eq.$userId"
             )
 
             val domainEntries = dtoList.map { it.toDomain() }
             Result.success(domainEntries)
         } catch (e: Exception) {
             // Em caso de falha de conexão com a rede, retorna os dados locais
-            if (localFallbackEntries.isNotEmpty()) {
-                Result.success(localFallbackEntries.toList())
+            val fallbackEntries = fallbackEntriesForCurrentUser()
+            if (fallbackEntries.isNotEmpty()) {
+                Result.success(fallbackEntries.toList())
             } else {
                 Result.failure(e)
             }
@@ -47,7 +50,10 @@ class DiaryRepository {
         )
 
         // Salva na lista local para suporte offline
-        localFallbackEntries.add(0, newEntry)
+        if (SupabaseConfig.isConfigured && !isValidUuid(SupabaseConfig.currentUserId)) {
+            return@withContext Result.failure(Exception("Usuário não autenticado."))
+        }
+        fallbackEntriesForCurrentUser().add(0, newEntry)
 
         if (!SupabaseConfig.isConfigured) {
             return@withContext Result.success(newEntry)
@@ -59,24 +65,32 @@ class DiaryRepository {
                 userId = SupabaseConfig.currentUserId
             )
 
-            val responseList = SupabaseClient.diaryApi.insertEntry(entry = dto)
+            val responseList = SupabaseClient.diaryApi.insertEntry(
+                userFilter = "eq.${SupabaseConfig.currentUserId}",
+                entry = dto
+            )
             val inserted = responseList.firstOrNull()?.toDomain() ?: newEntry
             Result.success(inserted)
         } catch (e: Exception) {
-            // Se falhou ao enviar pro Supabase (ex: RLS bloqueado), ainda mantemos localmente e reportamos sucesso com fallback
-            Result.success(newEntry)
+            Result.failure(Exception("Não foi possível salvar a emoção no Supabase: ${e.message}", e))
         }
     }
 
     suspend fun deleteEntry(id: String): Result<Unit> = withContext(Dispatchers.IO) {
-        localFallbackEntries.removeAll { it.id == id }
+        if (SupabaseConfig.isConfigured && !isValidUuid(SupabaseConfig.currentUserId)) {
+            return@withContext Result.failure(Exception("Usuário não autenticado."))
+        }
+        fallbackEntriesForCurrentUser().removeAll { it.id == id }
 
         if (!SupabaseConfig.isConfigured) {
             return@withContext Result.success(Unit)
         }
 
         return@withContext try {
-            val response = SupabaseClient.diaryApi.deleteEntry(idFilter = "eq.$id")
+            val response = SupabaseClient.diaryApi.deleteEntry(
+                idFilter = "eq.$id",
+                userFilter = "eq.${SupabaseConfig.currentUserId}"
+            )
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
@@ -95,5 +109,12 @@ class DiaryRepository {
         } catch (_: Exception) {
             false
         }
+    }
+
+    private fun fallbackEntriesForCurrentUser(): MutableList<DiaryEntry> {
+        val userKey = SupabaseConfig.currentUserId
+            ?: SupabaseConfig.currentUsername
+            ?: "anonymous"
+        return localFallbackEntriesByUser.getOrPut(userKey) { mutableListOf() }
     }
 }

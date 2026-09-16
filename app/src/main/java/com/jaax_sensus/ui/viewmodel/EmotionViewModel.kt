@@ -50,10 +50,14 @@ class EmotionViewModel(
         get() = SupabaseConfig.isConfigured
 
     fun login(username: String, password: String): Boolean {
-        if (username.isBlank()) return false
+        if (username.isBlank() || password.isBlank()) {
+            _errorMessage.value = "Digite seu nome ou e-mail e sua senha."
+            return false
+        }
         val trimmed = username.trim()
         _userName.value = trimmed
-        _isLoggedIn.value = true
+        _isLoggedIn.value = false
+        _errorMessage.value = null
 
         // Sincroniza em segundo plano com o Supabase se configurado
         viewModelScope.launch {
@@ -62,8 +66,10 @@ class EmotionViewModel(
             _isLoading.value = false
             result.onSuccess { remoteUsername ->
                 _userName.value = remoteUsername
+                _isLoggedIn.value = true
                 refreshEntries()
             }.onFailure { error ->
+                _isLoggedIn.value = false
                 _errorMessage.value = error.message
             }
         }
@@ -71,9 +77,53 @@ class EmotionViewModel(
         return true
     }
 
+    fun register(username: String, email: String, password: String): Boolean {
+        val trimmedUsername = username.trim()
+        val trimmedEmail = email.trim()
+        if (trimmedUsername.isBlank() || trimmedEmail.isBlank() || password.isBlank()) {
+            _errorMessage.value = "Preencha todos os campos."
+            return false
+        }
+
+        _errorMessage.value = null
+        _isLoading.value = true
+        viewModelScope.launch {
+            val result = authRepository.register(trimmedUsername, trimmedEmail, password)
+            _isLoading.value = false
+            result.onSuccess { registeredUsername ->
+                _userName.value = registeredUsername
+                _isLoggedIn.value = true
+                refreshEntries()
+            }.onFailure { error ->
+                _errorMessage.value = error.message ?: "Não foi possível concluir o cadastro."
+            }
+        }
+        return true
+    }
+
     fun logout() {
         authRepository.logout()
         _isLoggedIn.value = false
+        _entries.value = emptyList()
+        _selectedEmotion.value = null
+    }
+
+    fun updateProfile(name: String, country: String, state: String, city: String) {
+        if (name.isBlank()) {
+            _errorMessage.value = "Informe seu nome de usuário."
+            return
+        }
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = authRepository.updateProfile(name.trim(), country.trim(), state.trim(), city.trim())
+            _isLoading.value = false
+            result.onSuccess { updatedName ->
+                _userName.value = updatedName
+                _errorMessage.value = null
+            }.onFailure { error ->
+                _errorMessage.value = error.message
+            }
+        }
     }
 
     fun selectEmotion(emotion: EmotionType?) {
@@ -92,14 +142,17 @@ class EmotionViewModel(
         _selectedEmotion.value = null
 
         // Sincroniza com o Supabase
+        val sessionUserId = SupabaseConfig.currentUserId
         viewModelScope.launch {
             val result = diaryRepository.addEntry(emotion, trimmedNote)
+            if (SupabaseConfig.currentUserId != sessionUserId) return@launch
             result.onSuccess { inserted ->
                 // Atualiza com o ID ou data oficial retornada pelo Supabase
                 _entries.value = _entries.value.map {
                     if (it.id == newEntry.id) inserted else it
                 }
             }.onFailure { error ->
+                _entries.value = _entries.value.filterNot { it.id == newEntry.id }
                 _errorMessage.value = error.message
             }
         }
@@ -114,14 +167,14 @@ class EmotionViewModel(
     }
 
     fun refreshEntries() {
+        val sessionUserId = SupabaseConfig.currentUserId
         viewModelScope.launch {
             _isLoading.value = true
             val result = diaryRepository.getEntries()
             _isLoading.value = false
+            if (SupabaseConfig.currentUserId != sessionUserId) return@launch
             result.onSuccess { remoteEntries ->
-                if (remoteEntries.isNotEmpty()) {
-                    _entries.value = remoteEntries
-                }
+                _entries.value = remoteEntries
             }.onFailure { error ->
                 _errorMessage.value = error.message
             }

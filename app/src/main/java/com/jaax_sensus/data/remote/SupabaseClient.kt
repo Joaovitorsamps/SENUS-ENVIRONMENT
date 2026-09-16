@@ -2,6 +2,7 @@ package com.jaax_sensus.data.remote
 
 import com.jaax_sensus.data.remote.api.SupabaseAuthApi
 import com.jaax_sensus.data.remote.api.SupabaseDiaryApi
+import com.jaax_sensus.data.remote.dto.AuthResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
@@ -17,6 +18,13 @@ object SupabaseClient {
         Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
+    }
+
+    fun parseAuthError(body: String?): AuthResponse? {
+        if (body.isNullOrBlank()) return null
+        return runCatching {
+            moshi.adapter(AuthResponse::class.java).fromJson(body)
+        }.getOrNull()
     }
 
     private val authHeaderInterceptor = Interceptor { chain ->

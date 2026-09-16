@@ -31,6 +31,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -63,21 +64,26 @@ import com.jaax_sensus.ui.theme.White
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (username: String) -> Unit,
+    onLogin: (username: String, password: String) -> Unit,
+    onRegisterClick: () -> Unit = {},
+    isLoading: Boolean = false,
+    errorMessage: String? = null,
     modifier: Modifier = Modifier
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var localErrorMessage by remember { mutableStateOf<String?>(null) }
     val focusManager = LocalFocusManager.current
 
     val submitLogin = {
         if (username.isBlank()) {
-            errorMessage = "Digite seu nome de usuário."
+            localErrorMessage = "Digite seu e-mail."
+        } else if (password.isBlank()) {
+            localErrorMessage = "Digite sua senha."
         } else {
-            errorMessage = null
-            onLoginSuccess(username.trim())
+            localErrorMessage = null
+            onLogin(username.trim(), password)
         }
     }
 
@@ -117,7 +123,7 @@ fun LoginScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.logo_techtea),
-                        contentDescription = "Logo SENSUS",
+                        contentDescription = "Logo SENUS",
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(CircleShape),
@@ -150,7 +156,7 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = "USUÁRIO",
+                        text = "USUÁRIO OU E-MAIL",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFFCBD5E1),
@@ -161,11 +167,11 @@ fun LoginScreen(
                         value = username,
                         onValueChange = {
                             username = it
-                            errorMessage = null
+                            localErrorMessage = null
                         },
                         placeholder = {
                             Text(
-                                text = "Digite seu nome",
+                                text = "Digite seu nome ou e-mail",
                                 color = Color(0xFF64748B),
                                 fontSize = 14.sp
                             )
@@ -215,7 +221,7 @@ fun LoginScreen(
                         value = password,
                         onValueChange = {
                             password = it
-                            errorMessage = null
+                            localErrorMessage = null
                         },
                         placeholder = {
                             Text(
@@ -269,9 +275,10 @@ fun LoginScreen(
                     )
                 }
 
-                if (errorMessage != null) {
+                val visibleErrorMessage = errorMessage ?: localErrorMessage
+                if (visibleErrorMessage != null) {
                     Text(
-                        text = errorMessage!!,
+                        text = visibleErrorMessage,
                         color = Color(0xFFEF4444),
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 10.dp)
@@ -283,6 +290,7 @@ fun LoginScreen(
                 // Botão Entrar
                 Button(
                     onClick = submitLogin,
+                    enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
@@ -297,32 +305,54 @@ fun LoginScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = "Entrar",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = White,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Entrando...", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        } else {
+                            Text(
+                                text = "Entrar",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
+                TextButton(
+                    onClick = onRegisterClick,
+                    enabled = !isLoading
+                ) {
+                    Text(
+                        text = "Ainda não tenho uma conta",
+                        color = Color(0xFF60A5FA),
+                        fontSize = 13.sp
+                    )
+                }
+
                 // Quick Demo Login Button
                 TextButton(
                     onClick = {
-                        username = "jose"
-                        password = "••••••••"
-                        onLoginSuccess("jose")
-                    }
+                        username = "demo_user"
+                        password = "demo_password"
+                        onLogin("demo_user", password)
+                    },
+                    enabled = !isLoading
                 ) {
                     Text(
-                        text = "Entrar como jose (Demo)",
+                        text = "Entrar como (Demo)",
                         color = Color(0xFF60A5FA),
                         fontSize = 13.sp
                     )

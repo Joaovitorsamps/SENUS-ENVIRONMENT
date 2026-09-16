@@ -23,7 +23,6 @@ import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Adjust
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Schedule
@@ -62,6 +61,7 @@ import com.jaax_sensus.ui.viewmodel.EmotionViewModel
 fun DadosScreen(
     viewModel: EmotionViewModel,
     onNavigateToEmocoes: () -> Unit,
+    onEditProfile: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -83,6 +83,17 @@ fun DadosScreen(
             userName = userName,
             onLogoutClick = onLogoutClick
         )
+
+        Button(
+            onClick = onEditProfile,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = GreyishDarkBlue),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Text("Editar perfil", color = White)
+        }
 
         Column(
             modifier = Modifier
@@ -116,15 +127,6 @@ fun DadosScreen(
                     modifier = Modifier.weight(1f)
                 )
 
-                // Card 3: Chat Guia (Placeholder / 0)
-                MetricSummaryCard(
-                    title = "CHAT GUIA",
-                    value = "0",
-                    icon = Icons.Default.ChatBubbleOutline,
-                    gradientColors = listOf(Color(0xFF064E3B), Color(0xFF059669)),
-                    iconTint = Color(0xFF34D399),
-                    modifier = Modifier.weight(1f)
-                )
             }
 
             // Creative Touch: Emotional Insight Card

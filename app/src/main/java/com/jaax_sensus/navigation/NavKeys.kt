@@ -12,17 +12,17 @@ sealed interface AppRoute : NavKey {
     data object Emocoes : AppRoute
 
     @Serializable
-    data object ChatGuia : AppRoute
-
-    @Serializable
     data object Diario : AppRoute
 
     @Serializable
     data object Dados : AppRoute
+
+    @Serializable
+    data object EditarPerfil : AppRoute
 }
 
 typealias Emocoes = AppRoute.Emocoes
-typealias ChatGuia = AppRoute.ChatGuia
 typealias Diario = AppRoute.Diario
 typealias Dados = AppRoute.Dados
+typealias EditarPerfil = AppRoute.EditarPerfil
 

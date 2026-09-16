@@ -17,6 +17,11 @@ data class SignInRequest(
 )
 
 @JsonClass(generateAdapter = true)
+data class UsernameLookupRequest(
+    val username_input: String
+)
+
+@JsonClass(generateAdapter = true)
 data class AuthResponse(
     @param:Json(name = "access_token") val accessToken: String? = null,
     @param:Json(name = "token_type") val tokenType: String? = null,
@@ -31,5 +36,11 @@ data class AuthResponse(
 data class SupabaseUserDto(
     val id: String,
     val email: String? = null,
-    @param:Json(name = "user_metadata") val userMetadata: Map<String, String>? = null
+    @param:Json(name = "user_metadata") val userMetadata: SupabaseUserMetadata? = null
+)
+
+@JsonClass(generateAdapter = true)
+data class SupabaseUserMetadata(
+    val username: String? = null,
+    @param:Json(name = "email_verified") val emailVerified: Boolean? = null
 )

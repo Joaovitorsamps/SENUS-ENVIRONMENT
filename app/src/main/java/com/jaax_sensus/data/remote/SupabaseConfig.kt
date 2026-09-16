@@ -15,12 +15,14 @@ object SupabaseConfig {
     var currentAccessToken: String? = null
     var currentUserId: String? = null
     var currentUsername: String? = null
+    var isDemoMode: Boolean = false
 
     /**
      * Retorna true se a URL e a Anon Key foram preenchidas com valores válidos.
      */
     val isConfigured: Boolean
-        get() = url.isNotBlank() &&
+        get() = !isDemoMode &&
+            url.isNotBlank() &&
                 !url.contains("sua-url-supabase") &&
                 !url.contains("placeholder") &&
                 anonKey.isNotBlank() &&

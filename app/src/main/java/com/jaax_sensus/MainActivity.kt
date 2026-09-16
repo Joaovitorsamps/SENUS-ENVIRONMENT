@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,11 +33,12 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.jaax_sensus.navigation.AppRoute
-import com.jaax_sensus.ui.screens.ChatGuiaScreen
 import com.jaax_sensus.ui.screens.DadosScreen
 import com.jaax_sensus.ui.screens.DiarioScreen
+import com.jaax_sensus.ui.screens.EditarPerfilScreen
 import com.jaax_sensus.ui.screens.EmocoesScreen
 import com.jaax_sensus.ui.screens.LoginScreen
+import com.jaax_sensus.ui.screens.RegisterScreen
 import com.jaax_sensus.ui.theme.DeepNavyBlue
 import com.jaax_sensus.ui.theme.GreyishDarkBlue
 import com.jaax_sensus.ui.theme.JAAXSENSUSTheme
@@ -69,6 +70,7 @@ fun MainAppRoot(
     emotionViewModel: EmotionViewModel = viewModel()
 ) {
     val isLoggedIn by emotionViewModel.isLoggedIn.collectAsState()
+    var showRegister by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
 
     AnimatedContent(
         targetState = isLoggedIn,
@@ -77,10 +79,26 @@ fun MainAppRoot(
     ) { loggedIn ->
         if (loggedIn) {
             MainAppScreen(emotionViewModel = emotionViewModel)
+        } else if (showRegister) {
+            RegisterScreen(
+                isLoading = emotionViewModel.isLoading.collectAsState().value,
+                errorMessage = emotionViewModel.errorMessage.collectAsState().value,
+                onRegister = emotionViewModel::register,
+                onBackToLogin = {
+                    emotionViewModel.clearError()
+                    showRegister = false
+                }
+            )
         } else {
             LoginScreen(
-                onLoginSuccess = { username ->
-                    emotionViewModel.login(username, "mock_password")
+                isLoading = emotionViewModel.isLoading.collectAsState().value,
+                errorMessage = emotionViewModel.errorMessage.collectAsState().value,
+                onLogin = { username, password ->
+                    emotionViewModel.login(username, password)
+                },
+                onRegisterClick = {
+                    emotionViewModel.clearError()
+                    showRegister = true
                 }
             )
         }
@@ -100,11 +118,6 @@ fun MainAppScreen(
             route = AppRoute.Emocoes,
             title = "Emoções",
             icon = Icons.Default.GridView
-        ),
-        BottomNavItem(
-            route = AppRoute.ChatGuia,
-            title = "Chat Guia",
-            icon = Icons.Default.ChatBubbleOutline
         ),
         BottomNavItem(
             route = AppRoute.Diario,
@@ -191,14 +204,6 @@ fun MainAppScreen(
                         }
                     )
                 }
-                entry<AppRoute.ChatGuia> {
-                    ChatGuiaScreen(
-                        userName = userName,
-                        onLogoutClick = {
-                            emotionViewModel.logout()
-                        }
-                    )
-                }
                 entry<AppRoute.Diario> {
                     DiarioScreen(
                         viewModel = emotionViewModel,
@@ -214,8 +219,23 @@ fun MainAppScreen(
                             backStack.clear()
                             backStack.add(AppRoute.Emocoes)
                         },
+                        onEditProfile = {
+                            backStack.add(AppRoute.EditarPerfil)
+                        },
                         onLogoutClick = {
                             emotionViewModel.logout()
+                        }
+                    )
+                }
+                entry<AppRoute.EditarPerfil> {
+                    EditarPerfilScreen(
+                        initialName = userName,
+                        isLoading = emotionViewModel.isLoading.collectAsState().value,
+                        errorMessage = emotionViewModel.errorMessage.collectAsState().value,
+                        onSave = emotionViewModel::updateProfile,
+                        onBack = {
+                            emotionViewModel.clearError()
+                            if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
                         }
                     )
                 }
