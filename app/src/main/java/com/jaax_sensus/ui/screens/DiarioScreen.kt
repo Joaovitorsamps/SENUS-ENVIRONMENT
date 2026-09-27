@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,11 +50,15 @@ import androidx.compose.ui.unit.sp
 import com.jaax_sensus.data.DiaryEntry
 import com.jaax_sensus.data.EmotionType
 import com.jaax_sensus.ui.components.SENSUSHeader
-import com.jaax_sensus.ui.theme.DeepNavyBlue
-import com.jaax_sensus.ui.theme.GreyishDarkBlue
-import com.jaax_sensus.ui.theme.LightGrey
-import com.jaax_sensus.ui.theme.PrimaryBlue
-import com.jaax_sensus.ui.theme.White
+import com.jaax_sensus.ui.theme.SensusCreamDark
+import com.jaax_sensus.ui.theme.SensusCreamLight
+import com.jaax_sensus.ui.theme.SensusDarkTaupe
+import com.jaax_sensus.ui.theme.SensusMintGreen
+import com.jaax_sensus.ui.theme.SensusSageTeal
+import com.jaax_sensus.ui.theme.SensusTaupeDark
+import com.jaax_sensus.ui.theme.SensusTaupeMuted
+import com.jaax_sensus.ui.theme.SensusTerracotta
+import com.jaax_sensus.ui.theme.SensusWarmCream
 import com.jaax_sensus.ui.viewmodel.EmotionViewModel
 
 @Composable
@@ -65,13 +70,14 @@ fun DiarioScreen(
     val entries by viewModel.entries.collectAsState()
     val selectedEmotion by viewModel.selectedEmotion.collectAsState()
     val userName by viewModel.userName.collectAsState()
+
     var noteText by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepNavyBlue)
+            .background(SensusSageTeal)
     ) {
         SENSUSHeader(
             userName = userName,
@@ -81,19 +87,21 @@ fun DiarioScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
-            // "Novo Registro" Card
+            // "Novo Registro" Card - Estilo Warm Cream
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = GreyishDarkBlue)
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, SensusCreamDark),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(18.dp)
                     ) {
                         // Card Header
                         Row(
@@ -103,27 +111,27 @@ fun DiarioScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.MenuBook,
                                 contentDescription = null,
-                                tint = PrimaryBlue,
+                                tint = SensusTerracotta,
                                 modifier = Modifier.size(20.dp)
                             )
                             Text(
-                                text = "Novo Registro",
+                                text = "Novo Registro no Diário",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = White
+                                color = SensusDarkTaupe
                             )
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Emotion Picker label
                         Text(
                             text = "Qual emoção você sentiu?",
-                            fontSize = 14.sp,
-                            color = LightGrey
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = SensusDarkTaupe
                         )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         // Emotion Icons Row
                         Row(
@@ -135,14 +143,14 @@ fun DiarioScreen(
                                 val isSelected = selectedEmotion == emotion
                                 Box(
                                     modifier = Modifier
-                                        .size(44.dp)
+                                        .size(46.dp)
                                         .clip(CircleShape)
                                         .background(
-                                            if (isSelected) emotion.color else Color(0xFF243342)
+                                            if (isSelected) emotion.color else SensusCreamLight
                                         )
                                         .border(
-                                            width = if (isSelected) 2.dp else 1.dp,
-                                            color = if (isSelected) White else Color(0xFF33475B),
+                                            width = if (isSelected) 2.5.dp else 1.dp,
+                                            color = if (isSelected) SensusTerracotta else SensusCreamDark,
                                             shape = CircleShape
                                         )
                                         .clickable {
@@ -156,8 +164,8 @@ fun DiarioScreen(
                                     Icon(
                                         imageVector = emotion.icon,
                                         contentDescription = emotion.title,
-                                        tint = if (isSelected) emotion.textColor else LightGrey,
-                                        modifier = Modifier.size(22.dp)
+                                        tint = if (isSelected) emotion.textColor else SensusDarkTaupe,
+                                        modifier = Modifier.size(24.dp)
                                     )
                                 }
                             }
@@ -173,47 +181,48 @@ fun DiarioScreen(
                         ) {
                             Text(
                                 text = "O que aconteceu?",
-                                fontSize = 14.sp,
-                                color = LightGrey
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = SensusDarkTaupe
                             )
                             Text(
-                                text = "Toque nas tags abaixo:",
+                                text = "Toque nas tags:",
                                 fontSize = 11.sp,
-                                color = Color(0xFF64748B)
+                                color = SensusTaupeMuted
                             )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Creative Touch: Quick Context Chips for Neurodivergent Expression
+                        // Quick Context Chips
                         val contextTags = listOf("Sensorial", "Barulho", "Mudança", "Sobrecarga", "Pausa", "Conquista")
-                        androidx.compose.foundation.lazy.LazyRow(
+                        LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.padding(bottom = 10.dp)
+                            modifier = Modifier.padding(bottom = 12.dp)
                         ) {
                             items(contextTags) { tag ->
                                 val isTagAdded = noteText.contains(tag)
                                 Box(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(20.dp))
-                                        .background(if (isTagAdded) PrimaryBlue.copy(alpha = 0.25f) else Color(0xFF243342))
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(if (isTagAdded) SensusMintGreen else SensusCreamLight)
                                         .border(
                                             width = 1.dp,
-                                            color = if (isTagAdded) PrimaryBlue else Color(0xFF33475B),
-                                            shape = RoundedCornerShape(20.dp)
+                                            color = if (isTagAdded) SensusDarkTaupe else SensusCreamDark,
+                                            shape = RoundedCornerShape(16.dp)
                                         )
                                         .clickable {
                                             if (!isTagAdded) {
                                                 noteText = if (noteText.isBlank()) tag else "$noteText • $tag"
                                             }
                                         }
-                                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
                                     Text(
                                         text = "+ $tag",
                                         fontSize = 11.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = if (isTagAdded) PrimaryBlue else LightGrey
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = SensusDarkTaupe
                                     )
                                 }
                             }
@@ -228,37 +237,38 @@ fun DiarioScreen(
                             },
                             placeholder = {
                                 Text(
-                                    text = "Descreva a situação...",
-                                    color = Color(0xFF64748B),
+                                    text = "Descreva a situação com suas palavras...",
+                                    color = SensusTaupeMuted,
                                     fontSize = 14.sp
                                 )
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(min = 96.dp),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF243342),
-                                unfocusedContainerColor = Color(0xFF243342),
-                                focusedBorderColor = PrimaryBlue,
-                                unfocusedBorderColor = Color(0xFF33475B),
-                                focusedTextColor = White,
-                                unfocusedTextColor = White
+                                focusedContainerColor = SensusCreamLight,
+                                unfocusedContainerColor = SensusCreamLight,
+                                focusedBorderColor = SensusTerracotta,
+                                unfocusedBorderColor = SensusCreamDark,
+                                focusedTextColor = SensusTaupeDark,
+                                unfocusedTextColor = SensusTaupeDark
                             )
                         )
 
                         if (errorMessage != null) {
                             Text(
                                 text = errorMessage!!,
-                                color = Color(0xFFEF4444),
+                                color = Color(0xFFC0392B),
                                 fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
                                 modifier = Modifier.padding(top = 6.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(18.dp))
 
-                        // Save button
+                        // Save button - Terracotta Pill
                         Button(
                             onClick = {
                                 if (selectedEmotion == null) {
@@ -271,23 +281,25 @@ fun DiarioScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(48.dp),
-                            shape = RoundedCornerShape(12.dp),
+                                .height(50.dp),
+                            shape = RoundedCornerShape(25.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryBlue,
-                                contentColor = White
+                                containerColor = SensusTerracotta,
+                                contentColor = SensusWarmCream
                             )
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
+                                tint = SensusWarmCream,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "Salvar no Diário",
                                 fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = SensusWarmCream
                             )
                         }
                     }
@@ -298,10 +310,10 @@ fun DiarioScreen(
             item {
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Histórico",
+                    text = "Histórico de Registros",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = White
+                    color = SensusDarkTaupe
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -316,8 +328,9 @@ fun DiarioScreen(
                     ) {
                         Text(
                             text = "Nenhum registro ainda.",
-                            color = LightGrey,
-                            fontSize = 15.sp
+                            color = SensusDarkTaupe.copy(alpha = 0.8f),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
@@ -341,27 +354,28 @@ private fun DiaryEntryCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 10.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = GreyishDarkBlue),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF2A3D52))
+            .padding(bottom = 12.dp),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
+        border = androidx.compose.foundation.BorderStroke(1.dp, SensusCreamDark),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left color accent bar for instant emotional visual identification
+            // Barra lateral da cor da emoção
             Box(
                 modifier = Modifier
-                    .width(5.dp)
-                    .height(68.dp)
+                    .width(6.dp)
+                    .height(72.dp)
                     .background(entry.emotion.color)
             )
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Emotion Icon Circle
@@ -380,54 +394,52 @@ private fun DiaryEntryCard(
                     )
                 }
 
-            Spacer(modifier = Modifier.width(14.dp))
+                Spacer(modifier = Modifier.width(14.dp))
 
-            // Text Info
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                // Text Info
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = entry.emotion.title,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = SensusDarkTaupe
+                        )
+                        Text(
+                            text = entry.getFormattedDateTime(),
+                            color = SensusTaupeMuted,
+                            fontSize = 11.sp
+                        )
+                    }
+
+                    if (entry.note.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = entry.note,
+                            fontSize = 13.sp,
+                            color = SensusTaupeDark,
+                            lineHeight = 17.sp
+                        )
+                    }
+                }
+
+                // Delete button
+                IconButton(
+                    onClick = onDeleteClick,
+                    modifier = Modifier.size(32.dp)
                 ) {
-                    Text(
-                        text = entry.emotion.title,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = White
-                    )
-                    Text(
-                        text = entry.getFormattedDateTime(),
-                        color = Color(0xFF8E8E93),
-                        fontSize = 12.sp
+                    Icon(
+                        imageVector = Icons.Default.DeleteOutline,
+                        contentDescription = "Excluir registro",
+                        tint = SensusTaupeMuted,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
-
-                if (entry.note.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = entry.note,
-                        fontSize = 13.sp,
-                        color = LightGrey
-                    )
-                }
-            }
-
-            // Delete button
-            IconButton(
-                onClick = onDeleteClick,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DeleteOutline,
-                    contentDescription = "Excluir registro",
-                    tint = Color(0xFF64748B),
-                    modifier = Modifier.size(18.dp)
-                )
             }
         }
     }
 }
-}
-
-
-

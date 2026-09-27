@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,11 +37,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jaax_sensus.data.EmotionType
 import com.jaax_sensus.ui.components.SENSUSHeader
-import com.jaax_sensus.ui.theme.DeepNavyBlue
-import com.jaax_sensus.ui.theme.GreyishDarkBlue
-import com.jaax_sensus.ui.theme.LightGrey
-import com.jaax_sensus.ui.theme.PrimaryBlue
-import com.jaax_sensus.ui.theme.White
+import com.jaax_sensus.ui.theme.SensusCreamDark
+import com.jaax_sensus.ui.theme.SensusCreamLight
+import com.jaax_sensus.ui.theme.SensusDarkTaupe
+import com.jaax_sensus.ui.theme.SensusMintGreen
+import com.jaax_sensus.ui.theme.SensusSageTeal
+import com.jaax_sensus.ui.theme.SensusTaupeDark
+import com.jaax_sensus.ui.theme.SensusTaupeMuted
+import com.jaax_sensus.ui.theme.SensusTerracotta
+import com.jaax_sensus.ui.theme.SensusWarmCream
 
 @Composable
 fun EmocoesScreen(
@@ -55,7 +57,7 @@ fun EmocoesScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepNavyBlue)
+            .background(SensusSageTeal)
     ) {
         SENSUSHeader(
             userName = userName,
@@ -66,72 +68,84 @@ fun EmocoesScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Creative Touch: Mindful Regulation Banner for neurodivergent comfort
+            // Banner de Regulação Consciente - Estilo Card Cream do design
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 14.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = GreyishDarkBlue),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF2A3D52))
+                    .padding(bottom = 16.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
+                border = androidx.compose.foundation.BorderStroke(1.dp, SensusCreamDark),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
+                        .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(38.dp)
+                            .size(44.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF243342)),
+                            .background(SensusMintGreen),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Spa,
                             contentDescription = null,
-                            tint = Color(0xFF38BDF8),
-                            modifier = Modifier.size(20.dp)
+                            tint = SensusDarkTaupe,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                     Column {
                         Text(
                             text = "Pausa Consciente",
-                            fontSize = 13.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = White
+                            color = SensusDarkTaupe
                         )
                         Text(
-                            text = "Respire fundo. Todas as emoções são válidas e necessárias.",
+                            text = "Respire fundo. Todas as emoções são válidas e acolhidas aqui.",
                             fontSize = 12.sp,
-                            color = LightGrey,
+                            color = SensusTaupeMuted,
                             lineHeight = 16.sp
                         )
                     }
                 }
             }
 
-            Text(
-                text = "Como você está se sentindo agora?",
-                style = MaterialTheme.typography.bodyLarge,
-                color = LightGrey,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            // Pill de Pergunta / Instrução
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(SensusWarmCream.copy(alpha = 0.35f))
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Como você está se sentindo agora?",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = SensusDarkTaupe,
+                    fontSize = 15.sp
+                )
+            }
 
-            // 2x3 Grid of large emotion buttons with subtle gradients & halos
+            // Grade de Emoções 2x3 com cards acolhedores
             val emotions = EmotionType.entries
             for (i in emotions.indices step 2) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        .padding(bottom = 14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     val firstEmotion = emotions[i]
                     EmotionCard(
@@ -150,6 +164,8 @@ fun EmocoesScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -163,43 +179,36 @@ private fun EmotionCard(
     Card(
         modifier = modifier
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(16.dp))
-            .shadow(6.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(22.dp))
+            .shadow(4.dp, RoundedCornerShape(22.dp))
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = emotion.color)
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
+        border = androidx.compose.foundation.BorderStroke(1.5.dp, SensusCreamDark)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.08f),
-                            Color.Transparent
-                        )
-                    )
-                )
-                .padding(16.dp),
+                .padding(14.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Subtle glowing halo behind the icon
+                // Círculo colorido da emoção
                 Box(
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(62.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.12f)),
+                        .background(emotion.color),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = emotion.icon,
                         contentDescription = emotion.title,
                         tint = emotion.textColor,
-                        modifier = Modifier.size(42.dp)
+                        modifier = Modifier.size(36.dp)
                     )
                 }
 
@@ -207,12 +216,11 @@ private fun EmotionCard(
 
                 Text(
                     text = emotion.title,
-                    color = emotion.textColor,
-                    fontSize = 18.sp,
+                    color = SensusDarkTaupe,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
     }
 }
-

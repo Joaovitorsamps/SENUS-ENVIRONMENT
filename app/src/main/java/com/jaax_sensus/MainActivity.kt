@@ -39,12 +39,12 @@ import com.jaax_sensus.ui.screens.EditarPerfilScreen
 import com.jaax_sensus.ui.screens.EmocoesScreen
 import com.jaax_sensus.ui.screens.LoginScreen
 import com.jaax_sensus.ui.screens.RegisterScreen
-import com.jaax_sensus.ui.theme.DeepNavyBlue
-import com.jaax_sensus.ui.theme.GreyishDarkBlue
 import com.jaax_sensus.ui.theme.JAAXSENSUSTheme
-import com.jaax_sensus.ui.theme.LightGrey
-import com.jaax_sensus.ui.theme.PrimaryBlue
-import com.jaax_sensus.ui.theme.White
+import com.jaax_sensus.ui.theme.SensusDarkTaupe
+import com.jaax_sensus.ui.theme.SensusMintGreen
+import com.jaax_sensus.ui.theme.SensusSageTeal
+import com.jaax_sensus.ui.theme.SensusTerracotta
+import com.jaax_sensus.ui.theme.SensusWarmCream
 import com.jaax_sensus.ui.viewmodel.EmotionViewModel
 
 private data class BottomNavItem(
@@ -133,11 +133,11 @@ fun MainAppScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = DeepNavyBlue,
+        containerColor = SensusSageTeal,
         bottomBar = {
             NavigationBar(
-                containerColor = GreyishDarkBlue,
-                contentColor = White
+                containerColor = SensusDarkTaupe,
+                contentColor = SensusWarmCream
             ) {
                 navItems.forEach { item ->
                     val selected = currentRoute == item.route
@@ -168,11 +168,11 @@ fun MainAppScreen(
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = PrimaryBlue,
-                            selectedTextColor = PrimaryBlue,
-                            unselectedIconColor = LightGrey,
-                            unselectedTextColor = LightGrey,
-                            indicatorColor = Color.Transparent
+                            selectedIconColor = SensusWarmCream,
+                            selectedTextColor = SensusWarmCream,
+                            unselectedIconColor = SensusMintGreen.copy(alpha = 0.7f),
+                            unselectedTextColor = SensusMintGreen.copy(alpha = 0.7f),
+                            indicatorColor = SensusTerracotta
                         )
                     )
                 }

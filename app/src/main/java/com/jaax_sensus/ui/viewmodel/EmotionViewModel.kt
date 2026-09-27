@@ -56,7 +56,7 @@ class EmotionViewModel(
         }
         val trimmed = username.trim()
         _userName.value = trimmed
-        _isLoggedIn.value = false
+        _isLoggedIn.value = true
         _errorMessage.value = null
 
         // Sincroniza em segundo plano com o Supabase se configurado
@@ -66,10 +66,8 @@ class EmotionViewModel(
             _isLoading.value = false
             result.onSuccess { remoteUsername ->
                 _userName.value = remoteUsername
-                _isLoggedIn.value = true
                 refreshEntries()
             }.onFailure { error ->
-                _isLoggedIn.value = false
                 _errorMessage.value = error.message
             }
         }
@@ -152,7 +150,6 @@ class EmotionViewModel(
                     if (it.id == newEntry.id) inserted else it
                 }
             }.onFailure { error ->
-                _entries.value = _entries.value.filterNot { it.id == newEntry.id }
                 _errorMessage.value = error.message
             }
         }

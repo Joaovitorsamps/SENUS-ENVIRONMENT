@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -50,11 +49,15 @@ import androidx.compose.ui.unit.sp
 import com.jaax_sensus.data.DateFilter
 import com.jaax_sensus.data.EmotionType
 import com.jaax_sensus.ui.components.SENSUSHeader
-import com.jaax_sensus.ui.theme.DeepNavyBlue
-import com.jaax_sensus.ui.theme.GreyishDarkBlue
-import com.jaax_sensus.ui.theme.LightGrey
-import com.jaax_sensus.ui.theme.PrimaryBlue
-import com.jaax_sensus.ui.theme.White
+import com.jaax_sensus.ui.theme.SensusCreamDark
+import com.jaax_sensus.ui.theme.SensusCreamLight
+import com.jaax_sensus.ui.theme.SensusDarkTaupe
+import com.jaax_sensus.ui.theme.SensusMintGreen
+import com.jaax_sensus.ui.theme.SensusSageTeal
+import com.jaax_sensus.ui.theme.SensusTaupeDark
+import com.jaax_sensus.ui.theme.SensusTaupeMuted
+import com.jaax_sensus.ui.theme.SensusTerracotta
+import com.jaax_sensus.ui.theme.SensusWarmCream
 import com.jaax_sensus.ui.viewmodel.EmotionViewModel
 
 @Composable
@@ -77,22 +80,24 @@ fun DadosScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(DeepNavyBlue)
+            .background(SensusSageTeal)
     ) {
         SENSUSHeader(
             userName = userName,
             onLogoutClick = onLogoutClick
         )
 
+        // Botão Editar Perfil - Pill arredondada
         Button(
             onClick = onEditProfile,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = GreyishDarkBlue),
-            shape = RoundedCornerShape(10.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .height(44.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = SensusDarkTaupe),
+            shape = RoundedCornerShape(22.dp)
         ) {
-            Text("Editar perfil", color = White)
+            Text("Editar Perfil & Preferências", color = SensusWarmCream, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         }
 
         Column(
@@ -102,18 +107,18 @@ fun DadosScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Top 3 Metric Cards
+            // Top 2 Metric Cards - Estilo Warm Cream com destaque em Terracotta (Image 3)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Card 1: Registros
+                // Card 1: Total Registros
                 MetricSummaryCard(
                     title = "REGISTROS",
                     value = totalCount.toString(),
                     icon = Icons.Default.Adjust,
-                    gradientColors = listOf(Color(0xFF1E3A8A), Color(0xFF2563EB)),
-                    iconTint = Color(0xFF60A5FA),
+                    badgeColor = SensusTerracotta,
+                    iconTint = SensusWarmCream,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -122,56 +127,55 @@ fun DadosScreen(
                     title = "TOP EMOÇÃO",
                     value = topEmotion?.title ?: "-",
                     icon = Icons.AutoMirrored.Filled.TrendingUp,
-                    gradientColors = listOf(Color(0xFF581C87), Color(0xFF7C3AED)),
-                    iconTint = Color(0xFFC084FC),
+                    badgeColor = SensusMintGreen,
+                    iconTint = SensusDarkTaupe,
                     modifier = Modifier.weight(1f)
                 )
-
             }
 
-            // Creative Touch: Emotional Insight Card
+            // Insight Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = GreyishDarkBlue),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF2A3D52))
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
+                border = androidx.compose.foundation.BorderStroke(1.dp, SensusCreamDark)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(14.dp),
+                        .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(42.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF243342)),
+                            .background(SensusMintGreen),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.TrendingUp,
                             contentDescription = null,
-                            tint = Color(0xFFA855F7),
-                            modifier = Modifier.size(20.dp)
+                            tint = SensusDarkTaupe,
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                     Column {
                         Text(
                             text = if (totalCount > 0) "Insight de Progresso" else "Acompanhamento Emocional",
-                            fontSize = 13.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = White
+                            color = SensusDarkTaupe
                         )
                         Text(
                             text = if (totalCount > 0 && topEmotion != null) {
-                                "Sua emoção mais recorrente no período foi \"${topEmotion.title}\". O registro constante estimula a autorregulação!"
+                                "Sua emoção mais recorrente no período foi \"${topEmotion.title}\". Identificar padrões é o primeiro passo para o equilíbrio!"
                             } else {
-                                "Nenhum registro no período selecionado. Cada registro te ajuda a entender melhor seus padrões."
+                                "Nenhum registro no período selecionado. Cada marcação fortalece sua autorregulação."
                             },
                             fontSize = 12.sp,
-                            color = LightGrey,
+                            color = SensusTaupeMuted,
                             lineHeight = 16.sp
                         )
                     }
@@ -181,8 +185,9 @@ fun DadosScreen(
             // "Filtrar por Período" Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = GreyishDarkBlue)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
+                border = androidx.compose.foundation.BorderStroke(1.dp, SensusCreamDark)
             ) {
                 Column(
                     modifier = Modifier
@@ -198,14 +203,14 @@ fun DadosScreen(
                         Icon(
                             imageVector = Icons.Default.FilterAlt,
                             contentDescription = null,
-                            tint = PrimaryBlue,
+                            tint = SensusTerracotta,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
                             text = "Filtrar por Período",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = White
+                            color = SensusDarkTaupe
                         )
                     }
 
@@ -259,8 +264,9 @@ fun DadosScreen(
             // "Emoções Frequentes" Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = GreyishDarkBlue)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
+                border = androidx.compose.foundation.BorderStroke(1.dp, SensusCreamDark)
             ) {
                 Column(
                     modifier = Modifier
@@ -276,26 +282,25 @@ fun DadosScreen(
                         Icon(
                             imageVector = Icons.Default.BarChart,
                             contentDescription = null,
-                            tint = Color(0xFFA855F7),
+                            tint = SensusTerracotta,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
-                            text = "Emoções Frequentes",
+                            text = "Frequência de Emoções",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = White
+                            color = SensusDarkTaupe
                         )
                     }
 
                     if (filteredEntries.isEmpty()) {
-                        // Empty State Container
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .border(
                                     width = 1.dp,
-                                    color = Color(0xFF334155),
-                                    shape = RoundedCornerShape(12.dp)
+                                    color = SensusCreamDark,
+                                    shape = RoundedCornerShape(16.dp)
                                 )
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
@@ -308,61 +313,53 @@ fun DadosScreen(
                                     modifier = Modifier
                                         .size(54.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFF243342)),
+                                        .background(SensusCreamLight),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Inbox,
                                         contentDescription = null,
-                                        tint = LightGrey,
+                                        tint = SensusTaupeMuted,
                                         modifier = Modifier.size(28.dp)
                                     )
                                 }
 
                                 Text(
                                     text = "Nenhuma emoção registrada",
-                                    fontSize = 16.sp,
+                                    fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = White,
+                                    color = SensusDarkTaupe,
                                     textAlign = TextAlign.Center
                                 )
 
                                 Text(
-                                    text = "Comece registrando suas emoções na aba Emoções",
-                                    fontSize = 13.sp,
-                                    color = LightGrey,
+                                    text = "Comece registrando o que sente na aba Emoções",
+                                    fontSize = 12.sp,
+                                    color = SensusTaupeMuted,
                                     textAlign = TextAlign.Center
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
 
-                                // Button with Purple-to-Blue gradient
                                 Button(
                                     onClick = onNavigateToEmocoes,
-                                    shape = RoundedCornerShape(12.dp),
+                                    shape = RoundedCornerShape(22.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent
+                                        containerColor = SensusTerracotta,
+                                        contentColor = SensusWarmCream
                                     ),
-                                    modifier = Modifier
-                                        .background(
-                                            brush = Brush.horizontalGradient(
-                                                colors = listOf(Color(0xFF9333EA), Color(0xFF3B82F6))
-                                            ),
-                                            shape = RoundedCornerShape(12.dp)
-                                        )
-                                        .height(44.dp)
+                                    modifier = Modifier.height(46.dp)
                                 ) {
                                     Text(
                                         text = "Registrar Primeira Emoção",
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 14.sp,
-                                        color = White
+                                        fontSize = 14.sp
                                     )
                                 }
                             }
                         }
                     } else {
-                        // Emotion Frequency Breakdown List
+                        // Breakdown
                         Column(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
@@ -393,14 +390,15 @@ fun DadosScreen(
                                                 Text(
                                                     text = emotion.title,
                                                     fontSize = 14.sp,
-                                                    color = White,
-                                                    fontWeight = FontWeight.Medium
+                                                    color = SensusDarkTaupe,
+                                                    fontWeight = FontWeight.SemiBold
                                                 )
                                             }
                                             Text(
                                                 text = "$count (${(percentage * 100).toInt()}%)",
                                                 fontSize = 13.sp,
-                                                color = LightGrey
+                                                color = SensusTaupeMuted,
+                                                fontWeight = FontWeight.Medium
                                             )
                                         }
 
@@ -411,7 +409,7 @@ fun DadosScreen(
                                                 .height(8.dp)
                                                 .clip(RoundedCornerShape(4.dp)),
                                             color = emotion.color,
-                                            trackColor = Color(0xFF243342)
+                                            trackColor = SensusCreamLight
                                         )
                                     }
                                 }
@@ -420,6 +418,8 @@ fun DadosScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -429,56 +429,54 @@ private fun MetricSummaryCard(
     title: String,
     value: String,
     icon: ImageVector,
-    gradientColors: List<Color>,
+    badgeColor: Color,
     iconTint: Color,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = GreyishDarkBlue)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
+        border = androidx.compose.foundation.BorderStroke(1.dp, SensusCreamDark),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 10.dp),
+                .padding(vertical = 18.dp, horizontal = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Icon with glowing rounded container
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(46.dp)
                     .clip(CircleShape)
-                    .background(
-                        Brush.verticalGradient(colors = gradientColors)
-                    ),
+                    .background(badgeColor),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = White,
-                    modifier = Modifier.size(22.dp)
+                    tint = iconTint,
+                    modifier = Modifier.size(24.dp)
                 )
             }
 
-            // Big Metric Value
             Text(
                 text = value,
-                fontSize = if (value.length > 6) 16.sp else 22.sp,
+                fontSize = if (value.length > 6) 16.sp else 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = White,
+                color = SensusDarkTaupe,
                 textAlign = TextAlign.Center
             )
 
-            // Metric Title
             Text(
                 text = title,
-                fontSize = 10.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                color = LightGrey,
-                textAlign = TextAlign.Center
+                color = SensusTaupeMuted,
+                textAlign = TextAlign.Center,
+                letterSpacing = 0.5.sp
             )
         }
     }
@@ -494,15 +492,15 @@ private fun PeriodFilterButton(
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(if (isSelected) PrimaryBlue else Color(0xFF243342))
+            .clip(RoundedCornerShape(16.dp))
+            .background(if (isSelected) SensusTerracotta else SensusCreamLight)
             .border(
                 width = 1.dp,
-                color = if (isSelected) PrimaryBlue else Color(0xFF33475B),
-                shape = RoundedCornerShape(8.dp)
+                color = if (isSelected) SensusTerracotta else SensusCreamDark,
+                shape = RoundedCornerShape(16.dp)
             )
             .clickable(onClick = onClick)
-            .padding(vertical = 8.dp, horizontal = 6.dp),
+            .padding(vertical = 10.dp, horizontal = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -512,14 +510,14 @@ private fun PeriodFilterButton(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = if (isSelected) White else LightGrey,
+                tint = if (isSelected) SensusWarmCream else SensusDarkTaupe,
                 modifier = Modifier.size(14.dp)
             )
             Text(
                 text = title,
                 fontSize = 12.sp,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) White else LightGrey
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                color = if (isSelected) SensusWarmCream else SensusDarkTaupe
             )
         }
     }
@@ -538,16 +536,16 @@ private fun DateFieldItem(
         Text(
             text = label,
             fontSize = 11.sp,
-            color = LightGrey,
-            fontWeight = FontWeight.SemiBold
+            color = SensusDarkTaupe,
+            fontWeight = FontWeight.Bold
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFF243342))
-                .border(1.dp, Color(0xFF33475B), RoundedCornerShape(8.dp))
-                .padding(horizontal = 10.dp, vertical = 10.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(SensusCreamLight)
+                .border(1.dp, SensusCreamDark, RoundedCornerShape(14.dp))
+                .padding(horizontal = 12.dp, vertical = 10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -556,17 +554,16 @@ private fun DateFieldItem(
             ) {
                 Text(
                     text = placeholder,
-                    color = Color(0xFF64748B),
+                    color = SensusTaupeMuted,
                     fontSize = 13.sp
                 )
                 Icon(
                     imageVector = Icons.Default.CalendarMonth,
                     contentDescription = null,
-                    tint = LightGrey,
+                    tint = SensusDarkTaupe,
                     modifier = Modifier.size(16.dp)
                 )
             }
         }
     }
 }
-
