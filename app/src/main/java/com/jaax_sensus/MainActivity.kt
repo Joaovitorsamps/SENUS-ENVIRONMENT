@@ -7,9 +7,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.BarChart
@@ -26,12 +32,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.jaax_sensus.R
 import com.jaax_sensus.navigation.AppRoute
 import com.jaax_sensus.ui.screens.DadosScreen
 import com.jaax_sensus.ui.screens.DiarioScreen
@@ -43,6 +58,7 @@ import com.jaax_sensus.ui.theme.JAAXSENSUSTheme
 import com.jaax_sensus.ui.theme.SensusDarkTaupe
 import com.jaax_sensus.ui.theme.SensusMintGreen
 import com.jaax_sensus.ui.theme.SensusSageTeal
+import com.jaax_sensus.ui.theme.SensusTaupeDark
 import com.jaax_sensus.ui.theme.SensusTerracotta
 import com.jaax_sensus.ui.theme.SensusWarmCream
 import com.jaax_sensus.ui.viewmodel.EmotionViewModel
@@ -52,6 +68,12 @@ private data class BottomNavItem(
     val title: String,
     val icon: ImageVector
 )
+
+private enum class BackgroundSection(val alignment: Alignment) {
+    LEFT(Alignment.CenterStart),
+    CENTER(Alignment.Center),
+    RIGHT(Alignment.CenterEnd)
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,6 +134,13 @@ fun MainAppScreen(
     val backStack = rememberNavBackStack(AppRoute.Emocoes)
     val currentRoute = backStack.lastOrNull() ?: AppRoute.Emocoes
     val userName by emotionViewModel.userName.collectAsState()
+    val backgroundSection = when (currentRoute) {
+        AppRoute.Emocoes -> BackgroundSection.LEFT
+        AppRoute.Diario -> BackgroundSection.CENTER
+        AppRoute.Dados -> BackgroundSection.RIGHT
+        AppRoute.EditarPerfil -> BackgroundSection.CENTER
+        else -> BackgroundSection.CENTER
+    }
 
     val navItems = listOf(
         BottomNavItem(
@@ -133,7 +162,7 @@ fun MainAppScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = SensusSageTeal,
+        containerColor = Color.Transparent,
         bottomBar = {
             NavigationBar(
                 containerColor = SensusDarkTaupe,
@@ -162,16 +191,28 @@ fun MainAppScreen(
                             )
                         },
                         label = {
-                            Text(
-                                text = item.title,
-                                style = MaterialTheme.typography.labelMedium
+                                Text(
+                                    text = item.title,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = SensusWarmCream,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(
+                                            if (selected) {
+                                                SensusTerracotta
+                                            } else {
+                                                SensusTaupeDark.copy(alpha = 0.96f)
+                                            }
+                                        )
+                                        .padding(horizontal = 7.dp, vertical = 2.dp)
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = SensusWarmCream,
                             selectedTextColor = SensusWarmCream,
-                            unselectedIconColor = SensusMintGreen.copy(alpha = 0.7f),
-                            unselectedTextColor = SensusMintGreen.copy(alpha = 0.7f),
+                            unselectedIconColor = SensusWarmCream.copy(alpha = 0.9f),
+                            unselectedTextColor = SensusWarmCream.copy(alpha = 0.9f),
                             indicatorColor = SensusTerracotta
                         )
                     )
@@ -179,17 +220,49 @@ fun MainAppScreen(
             }
         }
     ) { innerPadding ->
-        NavDisplay(
-            backStack = backStack,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            onBack = {
-                if (backStack.size > 1) {
-                    backStack.removeAt(backStack.lastIndex)
-                }
-            },
-            entryProvider = entryProvider {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AnimatedContent(
+                targetState = backgroundSection,
+                transitionSpec = {
+                    slideInHorizontally { width -> width } togetherWith
+                        slideOutHorizontally { width -> -width }
+                },
+                label = "BackgroundTransition"
+            ) { section ->
+                Image(
+                    painter = painterResource(id = R.drawable.bg_sensus_nature),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight,
+                    alignment = section.alignment,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(4.dp)
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(SensusSageTeal.copy(alpha = 0.18f))
+            )
+            NavDisplay(
+                backStack = backStack,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                onBack = {
+                    if (backStack.size > 1) {
+                        backStack.removeAt(backStack.lastIndex)
+                    }
+                },
+                transitionSpec = {
+                    slideInHorizontally { width -> width } togetherWith
+                        slideOutHorizontally { width -> -width }
+                },
+                popTransitionSpec = {
+                    slideInHorizontally { width -> -width } togetherWith
+                        slideOutHorizontally { width -> width }
+                },
+                entryProvider = entryProvider {
                 entry<AppRoute.Emocoes> {
                     EmocoesScreen(
                         userName = userName,
@@ -239,7 +312,8 @@ fun MainAppScreen(
                         }
                     )
                 }
-            }
-        )
+                }
+            )
+        }
     }
 }

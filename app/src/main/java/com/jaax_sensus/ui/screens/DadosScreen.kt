@@ -53,7 +53,6 @@ import com.jaax_sensus.ui.theme.SensusCreamDark
 import com.jaax_sensus.ui.theme.SensusCreamLight
 import com.jaax_sensus.ui.theme.SensusDarkTaupe
 import com.jaax_sensus.ui.theme.SensusMintGreen
-import com.jaax_sensus.ui.theme.SensusSageTeal
 import com.jaax_sensus.ui.theme.SensusTaupeDark
 import com.jaax_sensus.ui.theme.SensusTaupeMuted
 import com.jaax_sensus.ui.theme.SensusTerracotta
@@ -80,7 +79,6 @@ fun DadosScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(SensusSageTeal)
     ) {
         SENSUSHeader(
             userName = userName,
@@ -567,3 +565,4 @@ private fun DateFieldItem(
         }
     }
 }
+

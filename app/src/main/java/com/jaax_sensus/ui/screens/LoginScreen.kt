@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -63,7 +64,6 @@ import com.jaax_sensus.R
 import com.jaax_sensus.ui.theme.SensusCreamDark
 import com.jaax_sensus.ui.theme.SensusCreamLight
 import com.jaax_sensus.ui.theme.SensusDarkTaupe
-import com.jaax_sensus.ui.theme.SensusMintGreen
 import com.jaax_sensus.ui.theme.SensusSageTeal
 import com.jaax_sensus.ui.theme.SensusTaupeDark
 import com.jaax_sensus.ui.theme.SensusTaupeMuted
@@ -86,7 +86,7 @@ fun LoginScreen(
 
     val submitLogin = {
         if (username.isBlank()) {
-            localErrorMessage = "Digite seu usuário ou e-mail."
+            localErrorMessage = "Digite seu e-mail."
         } else if (password.isBlank()) {
             localErrorMessage = "Digite sua senha."
         } else {
@@ -98,79 +98,48 @@ fun LoginScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(SensusSageTeal),
+            .background(SensusSageTeal)
+            .imePadding()
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Imagem botânica orgânica no fundo conforme design
-        Image(
-            painter = painterResource(id = R.drawable.bg_sensus_nature),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            alpha = 0.45f
-        )
-
-        // Overlay suave para leitura perfeita
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(SensusSageTeal.copy(alpha = 0.5f))
-        )
-
-        // Card central estilizado conforme mockup do designer (Image 2)
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .imePadding()
+                .padding(horizontal = 8.dp)
                 .verticalScroll(rememberScrollState()),
-            shape = RoundedCornerShape(28.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = SensusWarmCream),
-            border = androidx.compose.foundation.BorderStroke(1.5.dp, SensusCreamDark),
-            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+            border = androidx.compose.foundation.BorderStroke(1.dp, SensusCreamDark),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 28.dp),
+                    .padding(28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Pill superior com logo - idêntico ao wireframe
-                Row(
+                // Circular White Logo Container
+                Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(24.dp))
-                        .background(SensusMintGreen)
-                        .padding(horizontal = 14.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .size(80.dp)
+                        .clip(CircleShape)
+                        .background(SensusCreamLight)
+                        .shadow(4.dp, CircleShape)
+                        .padding(6.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_techtea),
+                        contentDescription = "Logo SENUS",
                         modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .background(SensusCreamLight),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.logo_techtea),
-                            contentDescription = "Logo SENSUS",
-                            modifier = Modifier
-                                .size(22.dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
-                    Text(
-                        text = "SENSUS",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = SensusDarkTaupe,
-                        fontSize = 16.sp,
-                        letterSpacing = 0.5.sp
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Fit
                     )
                 }
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "Bem-vindo!",
@@ -181,15 +150,15 @@ fun LoginScreen(
                 )
 
                 Text(
-                    text = "Seu espaço de autorregulação emocional",
+                    text = "SENSUS",
                     style = MaterialTheme.typography.bodyMedium,
                     color = SensusTaupeMuted,
-                    fontSize = 13.sp
+                    fontSize = 14.sp
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Input Usuário / E-mail - Pill arredondada
+                // Input Usuário
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -197,7 +166,7 @@ fun LoginScreen(
                     Text(
                         text = "USUÁRIO OU E-MAIL",
                         fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         color = SensusDarkTaupe,
                         letterSpacing = 0.5.sp
                     )
@@ -210,7 +179,7 @@ fun LoginScreen(
                         },
                         placeholder = {
                             Text(
-                                text = "Digite seu usuário ou e-mail",
+                                text = "Digite seu nome ou e-mail",
                                 color = SensusTaupeMuted,
                                 fontSize = 14.sp
                             )
@@ -219,7 +188,7 @@ fun LoginScreen(
                             Icon(
                                 imageVector = Icons.Default.Person,
                                 contentDescription = null,
-                                tint = SensusDarkTaupe,
+                                tint = SensusTaupeMuted,
                                 modifier = Modifier.size(20.dp)
                             )
                         },
@@ -228,8 +197,9 @@ fun LoginScreen(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next
                         ),
+                        textStyle = TextStyle(color = SensusTaupeDark, fontSize = 14.sp),
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = SensusCreamLight,
                             unfocusedContainerColor = SensusCreamLight,
@@ -243,7 +213,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Input Senha - Pill arredondada
+                // Input Senha
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -251,7 +221,7 @@ fun LoginScreen(
                     Text(
                         text = "SENHA",
                         fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         color = SensusDarkTaupe,
                         letterSpacing = 0.5.sp
                     )
@@ -273,7 +243,7 @@ fun LoginScreen(
                             Icon(
                                 imageVector = Icons.Default.Lock,
                                 contentDescription = null,
-                                tint = SensusDarkTaupe,
+                                tint = SensusTaupeMuted,
                                 modifier = Modifier.size(20.dp)
                             )
                         },
@@ -284,7 +254,7 @@ fun LoginScreen(
                                 Icon(
                                     imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                     contentDescription = if (isPasswordVisible) "Ocultar senha" else "Exibir senha",
-                                    tint = SensusDarkTaupe,
+                                    tint = SensusTaupeMuted,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -301,8 +271,9 @@ fun LoginScreen(
                                 submitLogin()
                             }
                         ),
+                        textStyle = TextStyle(color = SensusTaupeDark, fontSize = 14.sp),
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedContainerColor = SensusCreamLight,
                             unfocusedContainerColor = SensusCreamLight,
@@ -320,22 +291,21 @@ fun LoginScreen(
                         text = visibleErrorMessage,
                         color = Color(0xFFC0392B),
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(top = 10.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Botão Primário: Terracotta Orange Pill Button
+                // Botão Entrar
                 Button(
                     onClick = submitLogin,
                     enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
-                        .shadow(4.dp, RoundedCornerShape(26.dp)),
-                    shape = RoundedCornerShape(26.dp),
+                        .height(50.dp)
+                        .shadow(8.dp, RoundedCornerShape(12.dp), ambientColor = SensusTerracotta),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = SensusTerracotta,
                         contentColor = SensusWarmCream
@@ -352,49 +322,35 @@ fun LoginScreen(
                                 strokeWidth = 2.dp
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Entrando...", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            Text("Entrando...", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         } else {
                             Text(
                                 text = "Entrar",
                                 fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = SensusWarmCream
+                                fontWeight = FontWeight.SemiBold
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                 contentDescription = null,
-                                tint = SensusWarmCream,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-                // Botão Secundário: Dark Taupe Pill Button
-                Button(
+                TextButton(
                     onClick = onRegisterClick,
-                    enabled = !isLoading,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = SensusDarkTaupe,
-                        contentColor = SensusWarmCream
-                    )
+                    enabled = !isLoading
                 ) {
                     Text(
-                        text = "Criar nova conta",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = SensusWarmCream
+                        text = "Ainda não tenho uma conta",
+                        color = SensusTerracotta,
+                        fontSize = 13.sp
                     )
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
 
                 // Quick Demo Login Button
                 TextButton(
@@ -406,13 +362,13 @@ fun LoginScreen(
                     enabled = !isLoading
                 ) {
                     Text(
-                        text = "Entrar como visitante (Demo)",
-                        color = SensusDarkTaupe,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
+                        text = "Entrar como (Demo)",
+                        color = SensusTerracotta,
+                        fontSize = 13.sp
                     )
                 }
             }
         }
     }
 }
+
